@@ -5,9 +5,9 @@
 <title>選擇 Google 帳號</title>
 <style>
 body { font-family: sans-serif; text-align: center; padding: 40px; }
-button {
+.account-btn {
     display: block;
-    width: 260px;
+    width: 280px;
     margin: 10px auto;
     padding: 12px;
     font-size: 16px;
@@ -18,34 +18,41 @@ button {
 <body>
 
 <h2>請選擇你要使用的 Google 帳號</h2>
-<p>避免多帳號登入導致「很抱歉，目前無法開啟此檔案」。</p>
+<p>避免多帳號登入導致「無法開啟這個檔案」。</p>
 
 <script>
 const baseUrl = "https://script.google.com/macros/s/AKfycbzwyfltNODsT1-26fiIUTG92JeblmHOk4VQ2WntGj8yKDYPbf1qbQmhx3SchZoPHa7z/exec";
 
-// 取得 google 登入帳號 API
-fetch("https://accounts.google.com/ListAccounts?source=chrome")
-  .then(r => r.text())
-  .then(t => {
-    const gmailList = JSON.parse(t.replace(")]}'", "")).ds;
+// 向 Google 提取目前登入帳號資訊
+fetch("https://accounts.google.com/ListAccounts?gpsia=1&source=ChromiumBrowser&json=standard")
+.then(res => res.json())
+.then(data => {
+    const accounts = data.accounts || [];
 
-    // gmailList 是 ["帳號1", "帳號2", "帳號3", ...]
-    gmailList.forEach((email, index) => {
-      const btn = document.createElement("button");
-      btn.textContent = `使用帳號：${email}`;
-      btn.onclick = () => {
-        location.href = `${baseUrl}?authuser=${index}`;
-      };
-      document.body.appendChild(btn);
-    });
-
-    if (gmailList.length === 0) {
-      document.body.innerHTML += "<p>找不到登入帳號，請先登入 Google。</p>";
+    if (accounts.length === 0) {
+        document.body.insertAdjacentHTML("beforeend",
+            "<p>未偵測到 Google 帳號，請先登入。</p>"
+        );
+        return;
     }
-  });
-</script>
 
-<p style="margin-top:30px;color:#666;">若不知道該用哪個帳號，建議從列表中點選。</p>
+    accounts.forEach(acc => {
+        const index = acc.index;
+        const btn = document.createElement("button");
+        btn.className = "account-btn";
+        btn.textContent = `使用帳號：${acc.email}（authuser=${index}）`;
+        btn.onclick = () => {
+            window.location.href = `${baseUrl}?authuser=${index}`;
+        };
+        document.body.appendChild(btn);
+    });
+})
+.catch(() => {
+    document.body.insertAdjacentHTML("beforeend",
+        "<p>無法偵測帳號，請嘗試用無痕模式開啟。</p>"
+    );
+});
+</script>
 
 </body>
 </html>
