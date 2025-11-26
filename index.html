@@ -2,12 +2,12 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>選擇使用的 Google 帳號</title>
+<title>選擇 Google 帳號</title>
 <style>
 body { font-family: sans-serif; text-align: center; padding: 40px; }
 button {
     display: block;
-    width: 250px;
+    width: 260px;
     margin: 10px auto;
     padding: 12px;
     font-size: 16px;
@@ -16,27 +16,36 @@ button {
 </style>
 </head>
 <body>
-<h2>請選擇你要使用的 Google 帳號</h2>
-<p>避免多帳號登入導致錯誤頁面。</p>
 
-<!-- 請在這裡替換成你的 Web App exec URL -->
+<h2>請選擇你要使用的 Google 帳號</h2>
+<p>避免多帳號登入導致「很抱歉，目前無法開啟此檔案」。</p>
+
 <script>
 const baseUrl = "https://script.google.com/macros/s/AKfycbzwyfltNODsT1-26fiIUTG92JeblmHOk4VQ2WntGj8yKDYPbf1qbQmhx3SchZoPHa7z/exec";
+
+// 取得 google 登入帳號 API
+fetch("https://accounts.google.com/ListAccounts?source=chrome")
+  .then(r => r.text())
+  .then(t => {
+    const gmailList = JSON.parse(t.replace(")]}'", "")).ds;
+
+    // gmailList 是 ["帳號1", "帳號2", "帳號3", ...]
+    gmailList.forEach((email, index) => {
+      const btn = document.createElement("button");
+      btn.textContent = `使用帳號：${email}`;
+      btn.onclick = () => {
+        location.href = `${baseUrl}?authuser=${index}`;
+      };
+      document.body.appendChild(btn);
+    });
+
+    if (gmailList.length === 0) {
+      document.body.innerHTML += "<p>找不到登入帳號，請先登入 Google。</p>";
+    }
+  });
 </script>
 
-<button onclick="location.href = baseUrl + '?authuser=0'">
-使用第 1 個 Google 帳號（authuser=0）
-</button>
-
-<button onclick="location.href = baseUrl + '?authuser=1'">
-使用第 2 個 Google 帳號（authuser=1）
-</button>
-
-<button onclick="location.href = baseUrl + '?authuser=2'">
-使用第 3 個 Google 帳號（authuser=2）
-</button>
-
-<p style="margin-top:30px;color:#666;">若你不知道是哪一個，從 0 開始測試即可。</p>
+<p style="margin-top:30px;color:#666;">若不知道該用哪個帳號，建議從列表中點選。</p>
 
 </body>
 </html>
