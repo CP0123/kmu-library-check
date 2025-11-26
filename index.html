@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>選擇使用的 Google 帳號</title>
+<style>
+body { font-family: sans-serif; text-align: center; padding: 40px; }
+button {
+    display: block;
+    width: 250px;
+    margin: 10px auto;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+<h2>請選擇你要使用的 Google 帳號</h2>
+<p>避免多帳號登入導致錯誤頁面。</p>
+
+<!-- 請在這裡替換成你的 Web App exec URL -->
+<script>
+const baseUrl = "https://script.google.com/macros/s/AKfycbzwyfltNODsT1-26fiIUTG92JeblmHOk4VQ2WntGj8yKDYPbf1qbQmhx3SchZoPHa7z/exec";
+</script>
+
+<button onclick="location.href = baseUrl + '?authuser=0'">
+使用第 1 個 Google 帳號（authuser=0）
+</button>
+
+<button onclick="location.href = baseUrl + '?authuser=1'">
+使用第 2 個 Google 帳號（authuser=1）
+</button>
+
+<button onclick="location.href = baseUrl + '?authuser=2'">
+使用第 3 個 Google 帳號（authuser=2）
+</button>
+
+<p style="margin-top:30px;color:#666;">若你不知道是哪一個，從 0 開始測試即可。</p>
+
+</body>
+</html>
